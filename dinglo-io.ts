@@ -2,8 +2,7 @@ import { Socket, io } from "socket.io-client";
 import { nanoid } from "nanoid";
 
 export class DingloIO {
-    private socket :Socket | undefined;
-    
+    socket :Socket | undefined;
     initializeSocket(){
         if(!this.socket){
             this.socket = io("http://localhost:3001")
@@ -11,9 +10,13 @@ export class DingloIO {
 
         if(!this.getFromLocalStorage("DingloIO-user"))
             this.uniqueUser();
+
     }
     on(event: string, cb:(param: any)=>void){
         this.socket?.on(event,cb);
+    }
+    off(event: string){
+        this.socket?.off(event);
     }
     respond(msg: string){
         this.socket?.emit("message",msg);
@@ -31,3 +34,4 @@ export class DingloIO {
 }
 
 export const dingloIO = new DingloIO();
+dingloIO.initializeSocket();

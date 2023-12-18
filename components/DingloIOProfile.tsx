@@ -3,6 +3,7 @@
 import Image from "next/image";
 
 export const DingloIOProfile = () => {
+ 
   return (
     <div>
       <div className="flex items-center gap-2">
