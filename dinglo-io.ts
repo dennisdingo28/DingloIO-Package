@@ -19,7 +19,7 @@ export class DingloIO {
         this.socket?.off(event);
     }
     respond(msg: string){
-        this.socket?.emit("message",msg);
+        this.socket?.emit("message",{message:msg, isAgent: false, messagedAt: new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })});
     }
     disconnectSocket(){
         this.socket?.disconnect();

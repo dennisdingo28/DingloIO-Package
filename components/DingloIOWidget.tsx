@@ -1,13 +1,11 @@
 "use client";
 
-import { Phone, Send } from "lucide-react";
+import { Phone } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Separator } from "./ui/separator";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 import { DingloIOProfile } from "./DingloIOProfile";
 import { DingloIOSettings } from "./DingloIOSettings";
 import { DingloIOMessages } from "./DingloIOMessages";
+import { DingloIOSubmit } from "./DingloIOSubmit";
 
 export const DingloIOWidget = () => {
   return (
@@ -23,21 +21,12 @@ export const DingloIOWidget = () => {
                 <DingloIOProfile/>
                 <DingloIOSettings/>
             </div>
-            <div className="px-2">
+            <div className="">
                 <DingloIOMessages/>
             </div>
             <div className="px-2">
-                <Separator className="h-[1.5px] bg-softBlue"/>
-                <div className="pt-3">
-                    <form className="flex items-center justify-between pb-2">
-                        <Input placeholder="Enter your message..." className="border-none"/>
-                        <Button variant={"outline"} className="group">
-                            <Send className="w-5 h-5 text-softBlue group-hover:text-white"/>
-                        </Button>
-                    </form>
-                </div>
+                <DingloIOSubmit/>
             </div>
-
         </PopoverContent>
       </Popover>
     </div>

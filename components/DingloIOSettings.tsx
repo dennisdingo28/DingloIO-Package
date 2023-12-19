@@ -1,8 +1,6 @@
 "use client"
 
-import { dingloIO } from "@/dinglo-io";
 import { Settings } from "lucide-react"
-import { useEffect } from "react"
 
 export const DingloIOSettings = () =>{
    
