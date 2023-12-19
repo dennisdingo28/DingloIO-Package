@@ -6,10 +6,13 @@ import { DingloIOMessage } from "./DingloIOMessage";
 import { dingloMessage } from "@/types";
 
 export const DingloIOMessages = () =>{
-    const [recievedMessages, setRecievedMessage] = useState<Array<dingloMessage>>([{message:'test from support',isAgent:true, messagedAt:new Date()}]);
+    const storedMessages = localStorage.getItem("DingloIO-messages");
+    const initialMessages = storedMessages ? JSON.parse(storedMessages) : [];
+    
+    const [receivedMessages, setReceivedMessages] = useState<Array<dingloMessage>>(initialMessages);    
     useEffect(()=>{
         dingloIO.on("message_client",(message: dingloMessage)=>{
-            setRecievedMessage(prev=>[...prev,message]);
+            setReceivedMessages(prev=>[...prev,message]);
         });
 
         return () => dingloIO.off("message_client");
@@ -19,7 +22,7 @@ export const DingloIOMessages = () =>{
 
     return (
         <div className="h-[500px] py-2 space-y-6 overflow-y-scroll overflowContainer">
-            {recievedMessages.map((msg, index)=>(
+            {receivedMessages.map((msg, index)=>(
                 <DingloIOMessage key={index} isAgent={msg.isAgent} message={msg.message as string} messagedAt={msg.messagedAt}/>
             ))}
         </div>

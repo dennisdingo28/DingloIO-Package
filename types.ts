@@ -1,5 +1,5 @@
 export interface dingloMessage {
     isAgent: boolean;
     message: string;
-    messagedAt: Date;
+    messagedAt: string;
 }
