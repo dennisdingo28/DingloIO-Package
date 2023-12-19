@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import { dingloMessage } from "./types";
 
 export class DingloIO {
-    socket :Socket | undefined;
+    socket: Socket | undefined;
     private storagePrefix = "DingloIO-";
 
     initializeSocket(){
