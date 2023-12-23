@@ -6,9 +6,9 @@ export class DingloIO {
     socket: Socket | undefined;
     private storagePrefix = "DingloIO-";
 
-    initializeSocket(){
+    initializeSocket(apiKey: string){
         if(!this.socket){
-            this.socket = io("http://localhost:3001")
+            this.socket = io("http://localhost:3001",{query:{apiKey}});
         }
         if(!this.getFromLocalStorage(this.storagePrefix+"user"))
             this.uniqueUser();
@@ -23,7 +23,6 @@ export class DingloIO {
         const messagedAt = new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
         this.socket?.emit("message",{message:msg, isAgent: false, messagedAt:messagedAt});
-
         
         const currentMessages: Array<dingloMessage> = this.getFromLocalStorage(this.storagePrefix+"messages", true);
 
@@ -55,4 +54,4 @@ export class DingloIO {
 }
 
 export const dingloIO = new DingloIO();
-dingloIO.initializeSocket();
+dingloIO.initializeSocket("dinglo-326967c3dd084caeb72e68e09a8b0c2d");
