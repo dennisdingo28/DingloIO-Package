@@ -11,7 +11,7 @@ export class DingloIO {
             if(!this.getFromLocalStorage(this.storagePrefix+"user"))
                 this.uniqueUser();
             
-            this.socket = io("http://localhost:3001",{query:{apiKey}});
+            this.socket = io("http://localhost:3001",{query:{apiKey, connectionId: this.getFromLocalStorage(this.storagePrefix+"user")}});
         }
     }
     on(event: string, cb:(param: any)=>void){
