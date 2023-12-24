@@ -8,10 +8,11 @@ export class DingloIO {
 
     initializeSocket(apiKey: string){
         if(!this.socket){
+            if(!this.getFromLocalStorage(this.storagePrefix+"user"))
+                this.uniqueUser();
+            
             this.socket = io("http://localhost:3001",{query:{apiKey}});
         }
-        if(!this.getFromLocalStorage(this.storagePrefix+"user"))
-            this.uniqueUser();
     }
     on(event: string, cb:(param: any)=>void){
         this.socket?.on(event,cb);
