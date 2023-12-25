@@ -5,18 +5,17 @@ import { useEffect, useState } from "react"
 import { DingloIOMessage } from "./DingloIOMessage";
 import { dingloMessage } from "@/types";
 
-export const DingloIOMessages = () =>{
-    const storedMessages = localStorage.getItem("DingloIO-messages");
-    const initialMessages = storedMessages ? JSON.parse(storedMessages) : [];
+export const DingloIOMessages = ({receivedMessages}:{receivedMessages: Array<dingloMessage>}) =>{
+  
     
-    const [receivedMessages, setReceivedMessages] = useState<Array<dingloMessage>>(initialMessages);    
-    useEffect(()=>{
-        dingloIO.on("message_client",(message: dingloMessage)=>{
-            setReceivedMessages(prev=>[...prev,message]);
-        });
+    // const [receivedMessages, setReceivedMessages] = useState<Array<dingloMessage>>(initialMessages);    
+    // useEffect(()=>{
+    //     dingloIO.on("message_client",(message: dingloMessage)=>{
+    //         setReceivedMessages(prev=>[...prev,message]);
+    //     });
 
-        return () => dingloIO.off("message_client");
-    },[]);
+    //     return () => dingloIO.off("message_client");
+    // },[]);
 
 
 

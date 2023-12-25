@@ -6,8 +6,20 @@ import { DingloIOProfile } from "./DingloIOProfile";
 import { DingloIOSettings } from "./DingloIOSettings";
 import { DingloIOMessages } from "./DingloIOMessages";
 import { DingloIOSubmit } from "./DingloIOSubmit";
+import { useEffect, useState } from "react";
+import { dingloIO } from "@/dinglo-io";
+import { dingloMessage } from "@/types";
 
 export const DingloIOWidget = () => {
+  const [receivedMessages, setReceivedMessages] = useState<Array<dingloMessage>>([]);    
+    useEffect(()=>{
+        dingloIO.on("message_client",(message: dingloMessage)=>{
+            setReceivedMessages(prev=>[...prev,message]);
+        });
+
+        return () => dingloIO.off("message_client");
+    },[]);
+    
   return (
     <div className="fixed bottom-2 right-2">
       <Popover>
@@ -22,7 +34,7 @@ export const DingloIOWidget = () => {
                 <DingloIOSettings/>
             </div>
             <div className="">
-                <DingloIOMessages/>
+                <DingloIOMessages receivedMessages={receivedMessages}/>
             </div>
             <div className="px-2">
                 <DingloIOSubmit/>

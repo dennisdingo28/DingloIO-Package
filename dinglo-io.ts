@@ -55,4 +55,4 @@ export class DingloIO {
 }
 
 export const dingloIO = new DingloIO();
-dingloIO.initializeSocket("dinglo-01492758db404d1bb40e69625837b31f");
+dingloIO.initializeSocket("dinglo-8d769c8b57514825ac2d5242e9303cce");
