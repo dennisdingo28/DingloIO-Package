@@ -1,6 +1,5 @@
 import { Socket, io } from "socket.io-client";
 import { nanoid } from "nanoid";
-import { dingloMessage } from "./types";
 
 export class DingloIO {
     socket: Socket | undefined;
@@ -37,9 +36,7 @@ export class DingloIO {
         }
         return localStorage.getItem(key);
     }
-    private setLocalStorageMessage(key: string, values: dingloMessage[]){
-        localStorage.setItem(key, JSON.stringify(values));
-    }
+  
     private uniqueUser(){
         localStorage.setItem("DingloIO-user",nanoid());
     }
