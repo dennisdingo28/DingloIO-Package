@@ -22,16 +22,7 @@ export class DingloIO {
     }
     respond(msg: string){
         const messagedAt = new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
         this.socket?.emit("message",{message:msg, isAgent: false, messagedAt:messagedAt});
-        
-        const currentMessages: Array<dingloMessage> = this.getFromLocalStorage(this.storagePrefix+"messages", true);
-
-        if(currentMessages && currentMessages.length>0)
-            this.setLocalStorageMessage(this.storagePrefix+"messages", [...currentMessages, {message:msg, isAgent: false, messagedAt:messagedAt}]);
-        else
-            this.setLocalStorageMessage(this.storagePrefix+"messages",[{message:msg, isAgent: false, messagedAt:messagedAt}]);
-
     }
     disconnectSocket(){
         this.socket?.disconnect();
