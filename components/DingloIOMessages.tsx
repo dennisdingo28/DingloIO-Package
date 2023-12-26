@@ -1,7 +1,5 @@
 "use client"
 
-import { dingloIO } from "@/dinglo-io";
-import { useEffect, useState } from "react"
 import { DingloIOMessage } from "./DingloIOMessage";
 import { dingloMessage } from "@/types";
 

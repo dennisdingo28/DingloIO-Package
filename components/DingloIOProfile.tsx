@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 
-export const DingloIOProfile = () => {
- 
+export const DingloIOProfile = ({isAgent}:{isAgent: boolean}) => {
+
+
   return (
     <div>
-      <div className="flex items-center gap-2">
+      {isAgent ? (
+        <div className="flex items-center gap-2">
         <div>
           <Image
             width={55}
@@ -26,6 +28,10 @@ export const DingloIOProfile = () => {
           </div>
         </div>
       </div>
+      ):(
+        <div className="text-white font-medium">Write us and we will handle the rest</div>
+      )}
+      
     </div>
   );
 };

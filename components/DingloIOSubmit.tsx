@@ -6,7 +6,7 @@ import { Input } from "./ui/input";
 import {useForm} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DingloIOMessageValidator } from "@/validators";
-import { dingloIO } from "@/dinglo-io";
+import dingloIO from "@/dinglo-io";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { Separator } from "@radix-ui/react-separator";
 import { dingloMessage } from "@/types";

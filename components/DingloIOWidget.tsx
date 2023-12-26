@@ -7,12 +7,13 @@ import { DingloIOSettings } from "./DingloIOSettings";
 import { DingloIOMessages } from "./DingloIOMessages";
 import { DingloIOSubmit } from "./DingloIOSubmit";
 import { useEffect, useState } from "react";
-import { dingloIO } from "@/dinglo-io";
+import dingloIO from "@/dinglo-io";
 import { dingloMessage } from "@/types";
 
 export const DingloIOWidget = () => {
   const [receivedMessages, setReceivedMessages] = useState<Array<dingloMessage>>([]);    
   const [newMessages, setNewMessages] = useState<boolean>(false);
+  const [availableAgent, setAvailableAgent] = useState<boolean>(false);
 
   useEffect(()=>{
         dingloIO.on("message_client",(message: dingloMessage)=>{
@@ -20,8 +21,15 @@ export const DingloIOWidget = () => {
             if(!newMessages)
               setNewMessages(true);
         });
+        dingloIO.on("available_agent", (isAvailableAgent)=>{
+            setAvailableAgent(isAvailableAgent);
+        });
+     
 
-        return () => dingloIO.off("message_client");
+        return () => {
+          dingloIO.off("message_client");
+          dingloIO.off("available_agent");
+        };
     },[]);
     
   return (
@@ -34,7 +42,7 @@ export const DingloIOWidget = () => {
         </PopoverTrigger>
         <PopoverContent className="shadow-[0px_0px_20px_1px_rgba(126,154,234)] p-0 border-none">
             <div className="bg-softBlue rounded-t-md p-2 flex items-center justify-between">
-                <DingloIOProfile/>
+                <DingloIOProfile isAgent={availableAgent}/>
                 <DingloIOSettings/>
             </div>
             <div className="">
