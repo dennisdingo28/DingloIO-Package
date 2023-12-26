@@ -12,9 +12,13 @@ import { dingloMessage } from "@/types";
 
 export const DingloIOWidget = () => {
   const [receivedMessages, setReceivedMessages] = useState<Array<dingloMessage>>([]);    
-    useEffect(()=>{
+  const [newMessages, setNewMessages] = useState<boolean>(false);
+
+  useEffect(()=>{
         dingloIO.on("message_client",(message: dingloMessage)=>{
             setReceivedMessages(prev=>[...prev,message]);
+            if(!newMessages)
+              setNewMessages(true);
         });
 
         return () => dingloIO.off("message_client");
@@ -22,9 +26,9 @@ export const DingloIOWidget = () => {
     
   return (
     <div className="fixed bottom-2 right-2">
-      <Popover>
+      <Popover onOpenChange={()=>setNewMessages(false)}>
         <PopoverTrigger asChild>
-          <div className="w-[60px] h-[60px] hover:w-[63px] rounded-full flex items-center justify-center cursor-pointer hover:h-[63px] duration-150 bg-softBlue">
+          <div className={`w-[60px] h-[60px] hover:w-[63px] rounded-full flex items-center justify-center cursor-pointer hover:h-[63px] duration-150 bg-softBlue ${newMessages ? "animate-bounce duration-1000":null}`}>
             <Phone className="w-5 h-5 text-white"/>
           </div>
         </PopoverTrigger>
@@ -37,7 +41,7 @@ export const DingloIOWidget = () => {
                 <DingloIOMessages receivedMessages={receivedMessages}/>
             </div>
             <div className="px-2">
-                <DingloIOSubmit/>
+                <DingloIOSubmit setMessages={setReceivedMessages}/>
             </div>
         </PopoverContent>
       </Popover>
