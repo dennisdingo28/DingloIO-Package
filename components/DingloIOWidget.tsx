@@ -14,11 +14,18 @@ export const DingloIOWidget = () => {
   const [receivedMessages, setReceivedMessages] = useState<Array<dingloMessage>>([]);    
   const [newMessages, setNewMessages] = useState<boolean>(false);
   const [availableAgent, setAvailableAgent] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(()=>{
+      dingloIO.off("message_client");
+      dingloIO.off("available_agent");
+
+
         dingloIO.on("message_client",(message: dingloMessage)=>{
             setReceivedMessages(prev=>[...prev,message]);
-            if(!newMessages)
+            console.log(message, isOpen);
+            
+            if(message.isNew && !isOpen)
               setNewMessages(true);
         });
         dingloIO.on("available_agent", (isAvailableAgent)=>{
@@ -30,13 +37,22 @@ export const DingloIOWidget = () => {
           dingloIO.off("message_client");
           dingloIO.off("available_agent");
         };
-    },[]);
+    },[isOpen]);
+
+    useEffect(()=>{
+      console.log("isOpen",isOpen);
+      
+    },[isOpen])
     
   return (
     <div className="fixed bottom-2 right-2">
-      <Popover onOpenChange={()=>setNewMessages(false)}>
+      <Popover onOpenChange={(open)=>{
+        console.log("popover",open);
+        setIsOpen(open);
+        setNewMessages(false);
+      }}>
         <PopoverTrigger asChild>
-          <div className={`w-[60px] h-[60px] hover:w-[63px] rounded-full flex items-center justify-center cursor-pointer hover:h-[63px] duration-150 bg-softBlue ${newMessages ? "animate-bounce duration-1000":null}`}>
+          <div className={`w-[60px] h-[60px] hover:w-[63px] rounded-full flex items-center bg-softBlue justify-center cursor-pointer hover:h-[63px] ${newMessages ? "duration-1000 hover:h-[60px] hover:w-[60px] animate-bounce":"duration-150"}`}>
             <Phone className="w-5 h-5 text-white"/>
           </div>
         </PopoverTrigger>

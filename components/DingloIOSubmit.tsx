@@ -30,7 +30,7 @@ export const DingloIOSubmit = ({setMessages}: DingloIOSubmit) => {
     <div>
         <Separator className={`h-[1.5px] ${Object.keys(errors).length>0 ? "bg-red-500":"bg-softBlue"}`}/>
         <form onSubmit={handleSubmit((data)=>{
-            setMessages(prev=>[...prev, {isAgent: false, message:data.message, messagedAt:new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}])
+            setMessages(prev=>[...prev, {isAgent: false, message:data.message, messagedAt:new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), isNew:false}])
             dingloIO.respond(data.message)
             })} className="pt-3 flex items-center justify-between pb-2">
             <Input {...register("message")} placeholder={errors.message?.message ? errors.message.message as string:"Enter your message..."} className="border-none" />
