@@ -22,13 +22,15 @@ export const DingloIOSubmit = ({setMessages}: DingloIOSubmit) => {
     });
 
     useEffect(()=>{
-
-    },[]);
+        console.log(errors);
+        
+    },[errors]);
 
   return (
     <div>
         <Separator className={`h-[1.5px] ${Object.keys(errors).length>0 ? "bg-red-500":"bg-softBlue"}`}/>
         <form onSubmit={handleSubmit((data)=>{
+            
             setMessages(prev=>[...prev, {isAgent: false, message:data.message, messagedAt:new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), isNew:false}])
             dingloIO.respond(data.message);
      
