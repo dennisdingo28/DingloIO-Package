@@ -14,6 +14,8 @@ export const DingloIOWidget = () => {
   const [receivedMessages, setReceivedMessages] = useState<
     Array<dingloMessage>
   >([]);
+
+  const [isTyping, setIsTyping] = useState<boolean>(false);
   const [newMessages, setNewMessages] = useState<boolean>(false);
   const [agent, setAgent] = useState<any>({});
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -21,6 +23,7 @@ export const DingloIOWidget = () => {
   useEffect(() => {
     dingloIO.off("message_client");
     dingloIO.off("available_agent");
+    dingloIO.off("typing");
 
     dingloIO.on("message_client", (message: dingloMessage) => {
       setReceivedMessages((prev) => [...prev, message]);
@@ -31,10 +34,14 @@ export const DingloIOWidget = () => {
     dingloIO.on("available_agent", (availableAgent) => {
       setAgent(availableAgent);
     });
+    dingloIO.on("typing", (typing) => {
+      setIsTyping(typing.isTyping);
+    });
 
     return () => {
       dingloIO.off("message_client");
       dingloIO.off("available_agent");
+
     };
   }, [isOpen]);
 
@@ -66,7 +73,7 @@ export const DingloIOWidget = () => {
         </PopoverTrigger>
         <PopoverContent className="shadow-[0px_0px_20px_1px_rgba(126,154,234)] p-0 border-none">
           <div className="bg-softBlue rounded-t-md p-2 flex items-center justify-between">
-            <DingloIOProfile agent={agent} />
+            <DingloIOProfile agent={agent} typing={isTyping}/>
             <DingloIOSettings />
           </div>
           <div className="">

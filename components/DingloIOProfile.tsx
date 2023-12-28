@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 
-export const DingloIOProfile = ({agent}:{agent: any}) => {
+interface DingloIOProifleProps {
+  agent: any;
+  typing: boolean;
+}
+
+export const DingloIOProfile = ({agent, typing}: DingloIOProifleProps) => {
 
 
   return (
@@ -24,7 +29,11 @@ export const DingloIOProfile = ({agent}:{agent: any}) => {
           <p className="text-sm font-medium">{agent.agentName}</p>
           <div className="flex items-center gap-1">
             <span className="w-[10px] h-[10px] bg-green-500 rounded-full"/>
-            <span className="text-xs text-green-500">Online</span>
+            {!typing ? (
+              <span className="text-xs text-green-500">Online</span>
+            ):(
+              <span className="text-xs text-gray-300">Typing...</span>
+            )}
           </div>
         </div>
       </div>

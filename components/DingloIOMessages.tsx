@@ -5,18 +5,6 @@ import { dingloMessage } from "@/types";
 
 export const DingloIOMessages = ({receivedMessages}:{receivedMessages: Array<dingloMessage>}) =>{
   
-    
-    // const [receivedMessages, setReceivedMessages] = useState<Array<dingloMessage>>(initialMessages);    
-    // useEffect(()=>{
-    //     dingloIO.on("message_client",(message: dingloMessage)=>{
-    //         setReceivedMessages(prev=>[...prev,message]);
-    //     });
-
-    //     return () => dingloIO.off("message_client");
-    // },[]);
-
-
-
     return (
         <div className="h-[500px] p-2 space-y-6 overflow-y-scroll overflowContainer">
             {receivedMessages.map((msg, index)=>(
