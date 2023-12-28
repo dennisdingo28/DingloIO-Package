@@ -7,7 +7,7 @@ import {useForm} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DingloIOMessageValidator } from "@/validators";
 import dingloIO from "@/dinglo-io";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { Separator } from "@radix-ui/react-separator";
 import { dingloMessage } from "@/types";
 
@@ -31,8 +31,7 @@ export const DingloIOSubmit = ({setMessages}: DingloIOSubmit) => {
         <form onSubmit={handleSubmit((data)=>{
             setMessages(prev=>[...prev, {isAgent: false, message:data.message, messagedAt:new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), isNew:false}])
             dingloIO.respond(data.message);
-            if(!dingloIO.socket) return;
-            dingloIO.socket.emit("typing",{})
+     
             })} className="pt-3 flex items-center justify-between pb-2">
             <Input {...register("message")} onChange={(e)=>{
                 if(e.target.value && e.target.value!==""){
