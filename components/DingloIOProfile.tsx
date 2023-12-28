@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 
-export const DingloIOProfile = ({isAgent}:{isAgent: boolean}) => {
+export const DingloIOProfile = ({agent}:{agent: any}) => {
 
 
   return (
     <div>
-      {isAgent ? (
+      {agent.available ? (
         <div className="flex items-center gap-2">
         <div>
           <Image
@@ -16,12 +16,12 @@ export const DingloIOProfile = ({isAgent}:{isAgent: boolean}) => {
             className="rounded-full w-[55px] h-[55px] object-cover"
             quality={100}
             priority
-            src={"/profile.jpg"}
+            src={agent.agentImage}
             alt="agent-profile"
           />
         </div>
         <div className="text-white">
-          <p className="text-sm font-medium">Dingo</p>
+          <p className="text-sm font-medium">{agent.agentName}</p>
           <div className="flex items-center gap-1">
             <span className="w-[10px] h-[10px] bg-green-500 rounded-full"/>
             <span className="text-xs text-green-500">Online</span>

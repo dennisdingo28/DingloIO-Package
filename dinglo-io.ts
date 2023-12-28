@@ -1,7 +1,7 @@
 import { Socket, io } from "socket.io-client";
 import { nanoid } from "nanoid";
 
-export class DingloIO {
+class DingloIO {
     socket: Socket | undefined;
     private storagePrefix = "DingloIO-";
 
