@@ -3,8 +3,8 @@ import { nanoid } from "nanoid";
 
 class DingloIO {
     socket: Socket | undefined;
+    
     private storagePrefix = "DingloIO-";
-
     initializeSocket(apiKey: string){
         if(!this.socket){
             if(!this.getFromLocalStorage(this.storagePrefix+"user"))
@@ -43,5 +43,5 @@ class DingloIO {
 }
 
 const dingloIO = new DingloIO();
-dingloIO.initializeSocket("dinglo-fe3f53fd2a834f3f8d4a4bba2e9b1884");
+dingloIO.initializeSocket("dinglo-606a3653e208499fac8f0f3bc82c3723");
 export default dingloIO;

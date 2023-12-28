@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone } from "lucide-react";
+import { Loader2, Phone } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { DingloIOProfile } from "./DingloIOProfile";
 import { DingloIOSettings } from "./DingloIOSettings";
@@ -9,45 +9,57 @@ import { DingloIOSubmit } from "./DingloIOSubmit";
 import { useEffect, useState } from "react";
 import dingloIO from "@/dinglo-io";
 import { dingloMessage } from "@/types";
+import { useRouter } from "next/navigation";
 
 export const DingloIOWidget = () => {
   const [receivedMessages, setReceivedMessages] = useState<
     Array<dingloMessage>
   >([]);
+  const router = useRouter();
 
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [newMessages, setNewMessages] = useState<boolean>(false);
   const [agent, setAgent] = useState<any>({});
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     dingloIO.off("message_client");
     dingloIO.off("available_agent");
     dingloIO.off("typing");
+    dingloIO.off("disable_project");
 
-    dingloIO.on("message_client", (message: dingloMessage) => {
-      setReceivedMessages((prev) => [...prev, message]);
-      console.log(message, isOpen);
-
-      if (message.isNew && !isOpen) setNewMessages(true);
-    });
-    dingloIO.on("available_agent", (availableAgent) => {
-      setAgent(availableAgent);
-    });
-    dingloIO.on("typing", (typing) => {
-      setIsTyping(typing.isTyping);
+    dingloIO.on("disable_project",(status)=>{
+        setIsActive(status.isActive);
     });
 
+    if(isActive){
+      dingloIO.on("message_client", (message: dingloMessage) => {
+        setReceivedMessages((prev) => [...prev, message]);
+        console.log(message, isOpen);
+  
+        if (message.isNew && !isOpen) setNewMessages(true);
+      });
+  
+      dingloIO.on("available_agent", (availableAgent) => {
+        setAgent(availableAgent);
+      });
+  
+      dingloIO.on("typing", (typing) => {
+        setIsTyping(typing.isTyping);
+      });
+  
+    }
+   
+    
     return () => {
       dingloIO.off("message_client");
       dingloIO.off("available_agent");
 
     };
-  }, [isOpen]);
-
-  useEffect(() => {
-    console.log("isOpen", isOpen);
-  }, [isOpen]);
+  }, [isOpen, isActive]);
+  
+  if(isActive===false) return null;
 
   return (
     <div className="fixed bottom-2 right-2">
@@ -58,7 +70,8 @@ export const DingloIOWidget = () => {
           setNewMessages(false);
         }}
       >
-        <PopoverTrigger asChild>
+        
+        <PopoverTrigger disabled={!isActive} asChild>
           <div
             className={`w-[60px] h-[60px] ${
               !newMessages ? "hover:h-[63px] hover:w-[63px]" : null
@@ -68,7 +81,9 @@ export const DingloIOWidget = () => {
                 : "duration-150"
             }`}
           >
-            <Phone className="w-5 h-5 text-white" />
+            {isActive===undefined ? <Loader2 className="w-5 h-5 text-white animate-spin"/>: null}
+            {isActive ? <Phone className="w-5 h-5 text-white" />: null}
+
           </div>
         </PopoverTrigger>
         <PopoverContent className="shadow-[0px_0px_20px_1px_rgba(126,154,234)] p-0 border-none">
