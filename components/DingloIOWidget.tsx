@@ -24,10 +24,7 @@ export const DingloIOWidget = () => {
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
-    dingloIO.off("message_client");
-    dingloIO.off("available_agent");
-    dingloIO.off("typing");
-    dingloIO.off("disable_project");
+
 
     dingloIO.on("disable_project",(status)=>{
         setIsActive(status.isActive);
@@ -55,9 +52,12 @@ export const DingloIOWidget = () => {
     return () => {
       dingloIO.off("message_client");
       dingloIO.off("available_agent");
-
+      dingloIO.off("message_client");
+      dingloIO.off("available_agent");
+      dingloIO.off("typing");
+      dingloIO.off("disable_project");
     };
-  }, [isOpen, isActive]);
+  }, [dingloIO.socket,isOpen, isActive]);
   
   if(isActive===false) return null;
 
