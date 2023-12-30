@@ -7,17 +7,24 @@ import {useForm} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DingloIOMessageValidator } from "@/validators";
 import dingloIO from "@/dinglo-io";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Separator } from "@radix-ui/react-separator";
 import { dingloMessage } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { v4 as uuidv4 } from 'uuid';
 
 interface DingloIOSubmit {
-    setMessages: Dispatch<SetStateAction<Array<dingloMessage>>>;
+  messages: Array<dingloMessage>;
+  setMessages: Dispatch<SetStateAction<Array<dingloMessage>>>;
 }
 
-export const DingloIOSubmit = ({setMessages}: DingloIOSubmit) => {
+export const DingloIOSubmit = ({messages, setMessages}: DingloIOSubmit) => {
+
+    const [syncedMessages, setSyncedMessages] = useState(messages);
+
+    useEffect(()=>{
+      setSyncedMessages(messages);
+    },[messages]);
 
     const {handleSubmit, register, formState:{errors}, getValues} = useForm({
         resolver: zodResolver(DingloIOMessageValidator),
@@ -43,11 +50,10 @@ export const DingloIOSubmit = ({setMessages}: DingloIOSubmit) => {
           });
         },
         onError:(err)=>{
-          // setSyncedMessages(messages);
-          // toast({toastType:"ERROR",title:"Message cannot be sent. Please try again later."});
+          setSyncedMessages(messages);
         },
         onMutate:(variables)=>{
-          // setSyncedMessages(prev=>[...prev, {...variables, connectionId: chatId}])
+          setSyncedMessages(prev=>[...prev, {...variables}]);
         }
       });
 
@@ -56,7 +62,7 @@ export const DingloIOSubmit = ({setMessages}: DingloIOSubmit) => {
         <Separator className={`h-[1.5px] ${Object.keys(errors).length>0 ? "bg-red-500":"bg-softBlue"}`}/>
         <form onSubmit={handleSubmit((data)=>{
             
-            createMessage({id:uuidv4(), isAgent: false, message:getValues("root.message"), isNew: false,messagedAt: new Date(Date.now()).toLocaleTimeString("en-US", {
+            createMessage({id:uuidv4(), isAgent: false, message:data.message, isNew: false,messagedAt: new Date(Date.now()).toLocaleTimeString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
             }),})

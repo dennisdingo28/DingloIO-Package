@@ -28,12 +28,12 @@ class DingloIO {
     }
     respond(msg: dingloMessage){
         const messagedAt = new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        this.socket?.emit("message",{message:msg, isAgent: false, messagedAt:messagedAt});
+        this.socket?.emit("message",{...msg});
     }
     async save(newMessage: dingloMessage){
-        const res = await axios.post(`http://localhost:3000/api/client/${this.chatId}`,{...newMessage, api_key: this.apiKey});
-    
-        return res.data;
+        const res = await fetch(`http://localhost:3000/api/client/${this.chatId}`,{method:"POST", body:JSON.stringify({...newMessage, apiKey: this.apiKey})});
+        const data = await res.json();
+        return data;
     }
     disconnectSocket(){
         this.socket?.disconnect();

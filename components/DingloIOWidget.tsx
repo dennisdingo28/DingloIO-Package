@@ -100,7 +100,7 @@ export const DingloIOWidget = () => {
             <DingloIOMessages receivedMessages={receivedMessages} />
           </div>
           <div className="px-2">
-            <DingloIOSubmit setMessages={setReceivedMessages} />
+            <DingloIOSubmit messages={receivedMessages} setMessages={setReceivedMessages} />
           </div>
         </PopoverContent>
       </Popover>
