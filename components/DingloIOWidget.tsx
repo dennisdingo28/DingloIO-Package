@@ -9,7 +9,6 @@ import { DingloIOSubmit } from "./DingloIOSubmit";
 import { useEffect, useState } from "react";
 import dingloIO from "@/dinglo-io";
 import { dingloMessage } from "@/types";
-import { useRouter } from "next/navigation";
 
 export const DingloIOWidget = () => {
   const [receivedMessages, setReceivedMessages] = useState<
@@ -45,7 +44,7 @@ export const DingloIOWidget = () => {
       });
   
       dingloIO.on("delete_message",(msgId)=>{
-        console.log("delete",msgId);
+        console.log("delete",msgId, receivedMessages);
         
         setReceivedMessages(prev=>{
           return prev.filter(msg=>msg.id!==msgId);
