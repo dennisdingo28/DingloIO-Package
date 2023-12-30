@@ -15,7 +15,6 @@ export const DingloIOWidget = () => {
   const [receivedMessages, setReceivedMessages] = useState<
     Array<dingloMessage>
   >([]);
-  const router = useRouter();
 
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [newMessages, setNewMessages] = useState<boolean>(false);
@@ -33,7 +32,6 @@ export const DingloIOWidget = () => {
     if(isActive){
       dingloIO.on("message_client", (message: dingloMessage) => {
         setReceivedMessages((prev) => [...prev, message]);
-        console.log(message, isOpen);
   
         if (message.isNew && !isOpen) setNewMessages(true);
       });
@@ -46,6 +44,13 @@ export const DingloIOWidget = () => {
         setIsTyping(typing.isTyping);
       });
   
+      dingloIO.on("delete_message",(msgId)=>{
+        console.log("delete",msgId);
+        
+        setReceivedMessages(prev=>{
+          return prev.filter(msg=>msg.id!==msgId);
+        })
+      });
     }
    
     
@@ -56,6 +61,7 @@ export const DingloIOWidget = () => {
       dingloIO.off("available_agent");
       dingloIO.off("typing");
       dingloIO.off("disable_project");
+      dingloIO.off("delete_message");
     };
   }, [dingloIO.socket,isOpen, isActive]);
   
