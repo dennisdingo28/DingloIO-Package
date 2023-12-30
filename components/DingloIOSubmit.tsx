@@ -10,6 +10,8 @@ import dingloIO from "@/dinglo-io";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { Separator } from "@radix-ui/react-separator";
 import { dingloMessage } from "@/types";
+import { useMutation } from "@tanstack/react-query";
+import { v4 as uuidv4 } from 'uuid';
 
 interface DingloIOSubmit {
     setMessages: Dispatch<SetStateAction<Array<dingloMessage>>>;
@@ -17,21 +19,47 @@ interface DingloIOSubmit {
 
 export const DingloIOSubmit = ({setMessages}: DingloIOSubmit) => {
 
-    const {handleSubmit, register, formState:{errors}} = useForm({
+    const {handleSubmit, register, formState:{errors}, getValues} = useForm({
         resolver: zodResolver(DingloIOMessageValidator),
     });
 
-    useEffect(()=>{
-        console.log(errors);
-        
-    },[errors]);
+    const {mutate: createMessage, isPending: isCreating} = useMutation({
+        mutationFn: async(newMessage:dingloMessage)=>{
+          
+            const data = await dingloIO.save(newMessage);
+            
+            return data;
+        },
+        onSuccess:(data, variables)=>{
+          
+          if(!dingloIO || !dingloIO.socket) return;
+    
+          dingloIO.respond({
+            id: variables.id,
+            isNew:false,
+            message: variables.message,
+            isAgent: variables.isAgent,
+            messagedAt: variables.messagedAt,
+          });
+        },
+        onError:(err)=>{
+          // setSyncedMessages(messages);
+          // toast({toastType:"ERROR",title:"Message cannot be sent. Please try again later."});
+        },
+        onMutate:(variables)=>{
+          // setSyncedMessages(prev=>[...prev, {...variables, connectionId: chatId}])
+        }
+      });
 
   return (
     <div>
         <Separator className={`h-[1.5px] ${Object.keys(errors).length>0 ? "bg-red-500":"bg-softBlue"}`}/>
         <form onSubmit={handleSubmit((data)=>{
             
-            setMessages(prev=>[...prev, {isAgent: false, message:data.message, messagedAt:new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), isNew:false}])
+            createMessage({id:uuidv4(), isAgent: false, message:getValues("root.message"), isNew: false,messagedAt: new Date(Date.now()).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),})
             dingloIO.respond(data.message);
      
             })} className="pt-3 flex items-center justify-between pb-2">

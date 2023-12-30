@@ -1,16 +1,23 @@
 import { Socket, io } from "socket.io-client";
 import { nanoid } from "nanoid";
+import { dingloMessage } from "./types";
+import axios from "axios";
 
 class DingloIO {
     socket: Socket | undefined;
     
     private storagePrefix = "DingloIO-";
+    private apiKey = "";
+    private chatId = this.getFromLocalStorage(this.storagePrefix+"user");
+
     initializeSocket(apiKey: string){
         if(!this.socket){
             if(!this.getFromLocalStorage(this.storagePrefix+"user"))
                 this.uniqueUser();
-            
+
+            this.apiKey = apiKey;
             this.socket = io("http://localhost:3001",{query:{apiKey, connectionId: this.getFromLocalStorage(this.storagePrefix+"user")}});
+            this.chatId=this.getFromLocalStorage(this.storagePrefix+"user");
         }
     }
     on(event: string, cb:(param: any)=>void){
@@ -19,9 +26,14 @@ class DingloIO {
     off(event: string){
         this.socket?.off(event);
     }
-    respond(msg: string){
+    respond(msg: dingloMessage){
         const messagedAt = new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         this.socket?.emit("message",{message:msg, isAgent: false, messagedAt:messagedAt});
+    }
+    async save(newMessage: dingloMessage){
+        const res = await axios.post(`http://localhost:3000/api/client/${this.chatId}`,{...newMessage, api_key: this.apiKey});
+    
+        return res.data;
     }
     disconnectSocket(){
         this.socket?.disconnect();
