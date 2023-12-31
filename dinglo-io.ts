@@ -1,7 +1,6 @@
 import { Socket, io } from "socket.io-client";
 import { nanoid } from "nanoid";
 import { dingloMessage } from "./types";
-import axios from "axios";
 
 class DingloIO {
     socket: Socket | undefined;
@@ -17,7 +16,7 @@ class DingloIO {
 
             this.apiKey = apiKey;
             this.socket = io("http://localhost:3001",{query:{apiKey, connectionId: this.getFromLocalStorage(this.storagePrefix+"user")}});
-            this.chatId=this.getFromLocalStorage(this.storagePrefix+"user");
+            this.chatId = this.getFromLocalStorage(this.storagePrefix+"user");
         }
     }
     on(event: string, cb:(param: any)=>void){
