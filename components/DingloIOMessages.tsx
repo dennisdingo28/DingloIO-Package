@@ -8,7 +8,7 @@ export const DingloIOMessages = ({receivedMessages}:{receivedMessages: Array<din
     return (
         <div className="h-[500px] p-2 space-y-6 overflow-y-scroll overflowContainer">
             {receivedMessages.map((msg, index)=>(
-                <DingloIOMessage key={index} isAgent={msg.isAgent} isNew={msg.isNew} message={msg.message as string} messagedAt={msg.messagedAt}/>
+                <DingloIOMessage key={index} msg={msg}/>
             ))}
         </div>
     )

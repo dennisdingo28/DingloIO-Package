@@ -14,6 +14,7 @@ export const DingloIOWidget = () => {
   const [receivedMessages, setReceivedMessages] = useState<
     Array<dingloMessage>
   >([]);
+  const [syncedMessages, setSyncedMessages] = useState(receivedMessages);
 
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [newMessages, setNewMessages] = useState<boolean>(false);
@@ -64,6 +65,10 @@ export const DingloIOWidget = () => {
     };
   }, [dingloIO.socket,isOpen, isActive]);
   
+  useEffect(()=>{
+    setSyncedMessages(receivedMessages);
+  },[receivedMessages]);
+
   if(isActive===false) return null;
 
   return (
@@ -97,10 +102,10 @@ export const DingloIOWidget = () => {
             <DingloIOSettings />
           </div>
           <div className="">
-            <DingloIOMessages receivedMessages={receivedMessages} />
+            <DingloIOMessages receivedMessages={syncedMessages} />
           </div>
           <div className="px-2">
-            <DingloIOSubmit messages={receivedMessages} setMessages={setReceivedMessages} />
+            <DingloIOSubmit messages={receivedMessages} setSyncedMessages={setSyncedMessages} />
           </div>
         </PopoverContent>
       </Popover>

@@ -1,5 +1,5 @@
-import { DingloIO } from "./dinglo-io";
+import dingloIO from "./dinglo-io";
 
 export {
-    DingloIO
-};
+    dingloIO
+}
