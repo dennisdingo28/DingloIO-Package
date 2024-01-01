@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import dingloIO from "@/dinglo-io";
 import { dingloMessage } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 export const DingloIOWidget = () => {
 
