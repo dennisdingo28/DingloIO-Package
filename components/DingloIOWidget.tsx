@@ -44,6 +44,7 @@ export const DingloIOWidget = () => {
     if(isActive){
 
       dingloIO.on("message_client",(msg)=>{
+        if(msg.isNew && !isOpen) setNewMessages(true);
         setSyncedMessages(prev=>[...prev, msg]);
       });
   
