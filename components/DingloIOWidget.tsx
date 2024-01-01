@@ -27,6 +27,8 @@ export const DingloIOWidget = () => {
    
     queryFn:async()=>{
       const data = await dingloIO.getConversation();
+      console.log("syncing", data);
+      
       setSyncedMessages(data.messages);
       return data.messages as dingloMessage[];
     },
@@ -40,7 +42,10 @@ export const DingloIOWidget = () => {
     });
 
     if(isActive){
-    
+
+      dingloIO.on("message_client",(msg)=>{
+        setSyncedMessages(prev=>[...prev, msg]);
+      });
   
       dingloIO.on("available_agent", (availableAgent) => {
         setAgent(availableAgent);
