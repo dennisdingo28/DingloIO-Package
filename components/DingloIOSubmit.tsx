@@ -14,8 +14,9 @@ import { useMutation } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 
 interface DingloIOSubmit {
-  messages: Array<dingloMessage>;
-  setSyncedMessages: Dispatch<SetStateAction<Array<dingloMessage>>>;
+  messages: Array<dingloMessage> | undefined;
+  syncedMessages: Array<dingloMessage>;
+  setSyncedMessages: Dispatch<SetStateAction <Array<dingloMessage>>>;
 }
 
 export const DingloIOSubmit = ({
@@ -29,6 +30,12 @@ export const DingloIOSubmit = ({
   } = useForm({
     resolver: zodResolver(DingloIOMessageValidator),
   });
+
+
+  useEffect(()=>{
+    if(messages)
+      setSyncedMessages(messages);
+  },[messages]);
 
   const { mutate: createMessage, isPending: isCreating } = useMutation({
     mutationFn: async (newMessage: Omit<dingloMessage, "isNew">) => {
@@ -47,6 +54,7 @@ export const DingloIOSubmit = ({
       });
     },
     onError: (err) => {
+      if(messages)
       setSyncedMessages(messages);
     },
     onMutate: (variables) => {
@@ -63,6 +71,8 @@ export const DingloIOSubmit = ({
       />
       <form
         onSubmit={handleSubmit((data) => {
+          console.log(data);
+          
           createMessage({
             id: uuidv4(),
             isAgent: false,
@@ -99,7 +109,7 @@ export const DingloIOSubmit = ({
           }
           className="border-none"
         />
-        <Button variant={"outline"} className="group">
+        <Button type="submit" variant={"outline"} className="group">
           <Send className="w-5 h-5 text-softBlue group-hover:text-white" />
         </Button>
       </form>

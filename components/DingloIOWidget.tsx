@@ -9,18 +9,28 @@ import { DingloIOSubmit } from "./DingloIOSubmit";
 import { useEffect, useState } from "react";
 import dingloIO from "@/dinglo-io";
 import { dingloMessage } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export const DingloIOWidget = () => {
-  const [receivedMessages, setReceivedMessages] = useState<
-    Array<dingloMessage>
-  >([]);
-  const [syncedMessages, setSyncedMessages] = useState(receivedMessages);
+
+  const [syncedMessages, setSyncedMessages] = useState<Array<dingloMessage>>([]);
 
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [newMessages, setNewMessages] = useState<boolean>(false);
   const [agent, setAgent] = useState<any>({});
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
+
+  const {data: messages ,isPending} = useQuery({
+    queryKey:["getConversationMessages"],
+   
+    queryFn:async()=>{
+      const data = await dingloIO.getConversation();
+      setSyncedMessages(data.messages);
+      return data.messages as dingloMessage[];
+    },
+  });
 
   useEffect(() => {
 
@@ -30,11 +40,7 @@ export const DingloIOWidget = () => {
     });
 
     if(isActive){
-      dingloIO.on("message_client", (message: dingloMessage) => {
-        setReceivedMessages((prev) => [...prev, message]);
-  
-        if (message.isNew && !isOpen) setNewMessages(true);
-      });
+    
   
       dingloIO.on("available_agent", (availableAgent) => {
         setAgent(availableAgent);
@@ -45,9 +51,8 @@ export const DingloIOWidget = () => {
       });
   
       dingloIO.on("delete_message",(msgId)=>{
-        console.log("delete",msgId, receivedMessages);
         
-        setReceivedMessages(prev=>{
+        setSyncedMessages(prev=>{
           return prev.filter(msg=>msg.id!==msgId);
         })
       });
@@ -65,9 +70,7 @@ export const DingloIOWidget = () => {
     };
   }, [dingloIO.socket,isOpen, isActive]);
   
-  useEffect(()=>{
-    setSyncedMessages(receivedMessages);
-  },[receivedMessages]);
+
 
   if(isActive===false) return null;
 
@@ -105,7 +108,7 @@ export const DingloIOWidget = () => {
             <DingloIOMessages receivedMessages={syncedMessages} />
           </div>
           <div className="px-2">
-            <DingloIOSubmit messages={receivedMessages} setSyncedMessages={setSyncedMessages} />
+            <DingloIOSubmit messages={messages} syncedMessages={syncedMessages} setSyncedMessages={setSyncedMessages} />
           </div>
         </PopoverContent>
       </Popover>

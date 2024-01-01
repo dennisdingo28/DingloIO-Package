@@ -1,6 +1,7 @@
 import { Socket, io } from "socket.io-client";
 import { nanoid } from "nanoid";
 import { dingloMessage } from "./types";
+import axios from "axios";
 
 class DingloIO {
     socket: Socket | undefined;
@@ -33,6 +34,10 @@ class DingloIO {
         const res = await fetch(`http://localhost:3000/api/client/${this.chatId}`,{method:"POST", body:JSON.stringify({...newMessage, apiKey: this.apiKey})});
         const data = await res.json();
         return data;
+    }
+    async getConversation(){
+        const res = await axios.get(`http://localhost:3000/api/client/${this.chatId}?apiKey=${this.apiKey}`);
+        return res.data;
     }
     disconnectSocket(){
         this.socket?.disconnect();
