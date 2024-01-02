@@ -43,7 +43,6 @@ export const DingloIOWidget = () => {
     if(isActive){
 
       dingloIO.on("message_client",(msg)=>{
-        console.log("mnessage_clien",msg);
         
         if(msg.isNew && !isOpen) setNewMessages(true);
 

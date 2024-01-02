@@ -4,4 +4,6 @@ export interface dingloMessage {
     message: string;
     messagedAt: string;
     isNew: boolean
+    agentName?: string;
+    agentImage?: string;
 }

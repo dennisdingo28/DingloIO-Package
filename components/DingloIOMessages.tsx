@@ -3,7 +3,11 @@
 import { DingloIOMessage } from "./DingloIOMessage";
 import { dingloMessage } from "@/types";
 
-export const DingloIOMessages = ({receivedMessages}:{receivedMessages: Array<dingloMessage>}) =>{
+interface DingloIOMessagesProps{
+    receivedMessages:Array<dingloMessage>;
+}
+
+export const DingloIOMessages = ({receivedMessages}: DingloIOMessagesProps) =>{
   
     return (
         <div className="h-[500px] p-2 space-y-6 overflow-y-scroll overflowContainer">
