@@ -23,7 +23,7 @@ export const DingloIOWidget = () => {
 
   const {data: messages ,isPending} = useQuery({
     queryKey:["getConversationMessages"],
-   
+    
     queryFn:async()=>{
       const data = await dingloIO.getConversation();
       console.log("syncing", data);
@@ -43,7 +43,10 @@ export const DingloIOWidget = () => {
     if(isActive){
 
       dingloIO.on("message_client",(msg)=>{
+        console.log("mnessage_clien",msg);
+        
         if(msg.isNew && !isOpen) setNewMessages(true);
+
         setSyncedMessages(prev=>[...prev, msg]);
       });
   
@@ -76,6 +79,10 @@ export const DingloIOWidget = () => {
   }, [dingloIO.socket,isOpen, isActive]);
   
 
+  useEffect(()=>{
+    if(messages)
+      setSyncedMessages(messages);
+  },[messages]);
 
   if(isActive===false) return null;
 

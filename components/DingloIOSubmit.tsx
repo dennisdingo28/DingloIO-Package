@@ -32,10 +32,6 @@ export const DingloIOSubmit = ({
   });
 
 
-  useEffect(()=>{
-    if(messages)
-      setSyncedMessages(messages);
-  },[messages]);
 
   const { mutate: createMessage, isPending: isCreating } = useMutation({
     mutationFn: async (newMessage: Omit<dingloMessage, "isNew">) => {
