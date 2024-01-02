@@ -27,10 +27,15 @@ export const DingloIOSubmit = ({
     handleSubmit,
     register,
     formState: { errors },
+    setValue
   } = useForm({
     resolver: zodResolver(DingloIOMessageValidator),
   });
 
+  useEffect(()=>{
+    console.log(errors);
+    
+  },[errors]);
 
 
   const { mutate: createMessage, isPending: isCreating } = useMutation({
@@ -56,6 +61,9 @@ export const DingloIOSubmit = ({
     onMutate: (variables) => {
       setSyncedMessages((prev) => [...prev, { ...variables, isNew: false }]);
     },
+    onSettled:()=>{
+      setValue("message","");
+    }
   });
 
   return (
@@ -82,22 +90,23 @@ export const DingloIOSubmit = ({
         className="pt-3 flex items-center justify-between pb-2"
       >
         <Input
-          {...register("message")}
-          onChange={(e) => {
-            if (e.target.value && e.target.value !== "") {
-              setTimeout(() => {
-                if (!dingloIO.socket) return;
+        {...register("message")}
+        onChange={(e) => {
+          if (e.target.value && e.target.value !== "") {
+            setTimeout(() => {
+              if (!dingloIO.socket) return;
 
-                dingloIO.socket.emit("typing", { isTyping: true });
-              }, 500);
-            } else {
-              setTimeout(() => {
-                if (!dingloIO.socket) return;
+              dingloIO.socket.emit("typing", { isTyping: true });
+            }, 500);
+          } else {
+            setTimeout(() => {
+              if (!dingloIO.socket) return;
 
-                dingloIO.socket.emit("typing", { isTyping: false });
-              }, 500);
-            }
-          }}
+              dingloIO.socket.emit("typing", { isTyping: false });
+            }, 500);
+          }
+        }}
+          
           placeholder={
             errors.message?.message
               ? (errors.message.message as string)

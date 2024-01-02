@@ -40,16 +40,15 @@ export const DingloIOWidget = () => {
         
         setIsActive(status.isActive);
     });
-  
-    if(isActive){
-
-      dingloIO.on("message_client",(msg)=>{
+    dingloIO.on("message_client",(msg)=>{
         
-        if(msg.isNew && !isOpen) setNewMessages(true);
+      if(msg.isNew && !isOpen) setNewMessages(true);
 
-        setSyncedMessages(prev=>[...prev, msg]);
-      });
-  
+      setSyncedMessages(prev=>[...prev, msg]);
+    });
+    
+    if(isActive){
+      
       dingloIO.on("available_agent", (availableAgent) => {
         setSyncedMessages(prev=>{
           return prev.map(msg=>({
