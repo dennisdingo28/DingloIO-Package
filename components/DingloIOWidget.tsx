@@ -35,11 +35,12 @@ export const DingloIOWidget = () => {
 
   useEffect(() => {
 
-
     dingloIO.on("disable_project",(status)=>{
+        console.log("got here on errpor", status);
+        
         setIsActive(status.isActive);
     });
-
+  
     if(isActive){
 
       dingloIO.on("message_client",(msg)=>{
