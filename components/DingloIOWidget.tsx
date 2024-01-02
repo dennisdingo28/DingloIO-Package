@@ -50,6 +50,13 @@ export const DingloIOWidget = () => {
       });
   
       dingloIO.on("available_agent", (availableAgent) => {
+        setSyncedMessages(prev=>{
+          return prev.map(msg=>({
+            ...msg,
+            agentName:availableAgent.agentName,
+            agentImage:availableAgent.agentImage,
+          }));
+        })
         setAgent(availableAgent);
       });
   
