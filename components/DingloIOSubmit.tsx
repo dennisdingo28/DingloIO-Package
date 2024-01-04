@@ -7,27 +7,17 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DingloIOMessageValidator } from "@/validators";
 import dingloIO from "@/dinglo-io";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Separator } from "@radix-ui/react-separator";
 import { dingloMessage } from "@/types";
-import { useMutation } from "@tanstack/react-query";
-import { v4 as uuidv4 } from "uuid";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-interface DingloIOSubmit {
-  messages: Array<dingloMessage> | undefined;
-  syncedMessages: Array<dingloMessage>;
-  setSyncedMessages: Dispatch<SetStateAction <Array<dingloMessage>>>;
-}
-
-export const DingloIOSubmit = ({
-  messages,
-  setSyncedMessages,
-}: DingloIOSubmit) => {
+export const DingloIOSubmit = () => {
   const {
     handleSubmit,
     register,
     formState: { errors },
-    setValue
+    setValue,
   } = useForm({
     resolver: zodResolver(DingloIOMessageValidator),
   });
@@ -37,9 +27,10 @@ export const DingloIOSubmit = ({
     
   },[errors]);
 
+  const queryClient = useQueryClient();
 
   const { mutate: createMessage, isPending: isCreating } = useMutation({
-    mutationFn: async (newMessage: Omit<dingloMessage, "isNew">) => {
+    mutationFn: async (newMessage: Omit<dingloMessage, "isNew" | "id">) => {
       const data = await dingloIO.save(newMessage);
 
       return data;
@@ -48,21 +39,20 @@ export const DingloIOSubmit = ({
       if (!dingloIO || !dingloIO.socket) return;
 
       dingloIO.respond({
-        id: variables.id,
         message: variables.message,
         isAgent: variables.isAgent,
         messagedAt: variables.messagedAt,
       });
     },
-    onError: (err) => {
-      if(messages)
-      setSyncedMessages(messages);
-    },
     onMutate: (variables) => {
-      setSyncedMessages((prev) => [...prev, { ...variables, isNew: false }]);
+      queryClient.setQueryData(["getConversationMessages"], (old: dingloMessage[])=>[
+        ...old,
+        variables,
+      ]);
     },
     onSettled:()=>{
       setValue("message","");
+      queryClient.invalidateQueries({queryKey:["getConversationMessages"]});
     }
   });
 
@@ -78,7 +68,6 @@ export const DingloIOSubmit = ({
           console.log(data);
           
           createMessage({
-            id: uuidv4(),
             isAgent: false,
             message: data.message,
             messagedAt: new Date(Date.now()).toLocaleTimeString("en-US", {
@@ -105,6 +94,7 @@ export const DingloIOSubmit = ({
               dingloIO.socket.emit("typing", { isTyping: false });
             }, 500);
           }
+
         }}
           
           placeholder={

@@ -9,18 +9,17 @@ import { DingloIOSubmit } from "./DingloIOSubmit";
 import { useEffect, useState } from "react";
 import dingloIO from "@/dinglo-io";
 import { dingloMessage } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const DingloIOWidget = () => {
-
-  const [syncedMessages, setSyncedMessages] = useState<Array<dingloMessage>>([]);
 
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [newMessages, setNewMessages] = useState<boolean>(false);
   const [agent, setAgent] = useState<any>({});
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
-
+ 
+  const queryClient = useQueryClient();
   const {data: messages ,isPending} = useQuery({
     queryKey:["getConversationMessages"],
     
@@ -28,10 +27,14 @@ export const DingloIOWidget = () => {
       const data = await dingloIO.getConversation();
       console.log("syncing", data);
       
-      setSyncedMessages(data.messages);
       return data.messages as dingloMessage[];
     },
   });
+
+  useEffect(()=>{
+    console.log("data",messages);
+    
+  },[messages]);
 
   useEffect(() => {
 
@@ -40,22 +43,32 @@ export const DingloIOWidget = () => {
         
         setIsActive(status.isActive);
     });
+    dingloIO.on("invalidate_query",()=>{
+      console.log("invalidam");
+      
+      queryClient.invalidateQueries({queryKey:["getConversationMessages"]});
+  });
     dingloIO.on("message_client",(msg)=>{
         
       if(msg.isNew && !isOpen) setNewMessages(true);
-
-      setSyncedMessages(prev=>[...prev, msg]);
+      queryClient.setQueryData(["getConversationMessages"], (old: dingloMessage[])=>{
+        if(old && old.length>0)
+        return [...old, msg];
+        return [msg];
+      });
     });
     
     if(isActive){
       
       dingloIO.on("available_agent", (availableAgent) => {
-        setSyncedMessages(prev=>{
-          return prev.map(msg=>({
-            ...msg,
-            agentName:availableAgent.agentName,
-            agentImage:availableAgent.agentImage,
-          }));
+        queryClient.setQueryData(["getConversationMessages"],(old: dingloMessage[])=>{
+          if(old && old.length>0)
+            return old.map(prevMsg=>({
+              ...prevMsg,
+              agentName: prevMsg.agentName,
+              agentImage: prevMsg.agentImage,
+            }));
+          return [];
         })
         setAgent(availableAgent);
       });
@@ -65,9 +78,10 @@ export const DingloIOWidget = () => {
       });
   
       dingloIO.on("delete_message",(msgId)=>{
-        
-        setSyncedMessages(prev=>{
-          return prev.filter(msg=>msg.id!==msgId);
+        queryClient.setQueryData(["getConversationMessages"],(old: dingloMessage[])=>{
+          if(old && old.length>0)
+            return old.filter(prevMsg=>prevMsg.id!==msgId);
+          return [];
         })
       });
     }
@@ -85,10 +99,6 @@ export const DingloIOWidget = () => {
   }, [dingloIO.socket,isOpen, isActive]);
   
 
-  useEffect(()=>{
-    if(messages)
-      setSyncedMessages(messages);
-  },[messages]);
 
   if(isActive===false) return null;
 
@@ -122,11 +132,12 @@ export const DingloIOWidget = () => {
             <DingloIOProfile agent={agent} typing={isTyping}/>
             <DingloIOSettings />
           </div>
+          
           <div className="">
-            <DingloIOMessages receivedMessages={syncedMessages} />
+            <DingloIOMessages receivedMessages={messages || []} />
           </div>
           <div className="px-2">
-            <DingloIOSubmit messages={messages} syncedMessages={syncedMessages} setSyncedMessages={setSyncedMessages} />
+            <DingloIOSubmit/>
           </div>
         </PopoverContent>
       </Popover>
