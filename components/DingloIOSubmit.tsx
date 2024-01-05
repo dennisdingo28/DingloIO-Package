@@ -7,27 +7,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DingloIOMessageValidator } from "@/validators";
 import dingloIO from "@/dinglo-io";
-import { useEffect } from "react";
 import { Separator } from "@radix-ui/react-separator";
 import { dingloMessage } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 export const DingloIOSubmit = () => {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-    setValue,
-  } = useForm({
-    resolver: zodResolver(DingloIOMessageValidator),
-  });
-
-  useEffect(()=>{
-    console.log(errors);
-    
-  },[errors]);
-
   const queryClient = useQueryClient();
+
+  const [message, setMessage] = useState<string>("");
+  const [invalidMessage, setInvalidMessage] = useState<boolean>(false);
 
   const { mutate: createMessage, isPending: isCreating } = useMutation({
     mutationFn: async (newMessage: Omit<dingloMessage, "isNew" | "id">) => {
@@ -51,57 +40,59 @@ export const DingloIOSubmit = () => {
       ]);
     },
     onSettled:()=>{
-      setValue("message","");
       queryClient.invalidateQueries({queryKey:["getConversationMessages"]});
     }
   });
+
+  useEffect(()=>{
+    if(invalidMessage)
+      setTimeout(()=>{
+        setInvalidMessage(false);
+    },1500);
+  },[invalidMessage]);
+
+  useEffect(()=>{
+    if(message.trim()!=="" && invalidMessage) setInvalidMessage(false);
+
+    setTimeout(()=>{
+      dingloIO.socket?.emit("typing",{isTyping: message.trim()!=="" ? true:false});
+    },500);
+  }, [message]);
+
 
   return (
     <div>
       <Separator
         className={`h-[1.5px] ${
-          Object.keys(errors).length > 0 ? "bg-red-500" : "bg-softBlue"
+          invalidMessage? "bg-red-500" : "bg-softBlue"
         }`}
       />
       <form
-        onSubmit={handleSubmit((data) => {
-          console.log(data);
-          
-          createMessage({
-            isAgent: false,
-            message: data.message,
-            messagedAt: new Date(Date.now()).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-          });
-        })}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if(message.trim()!=="")
+            createMessage({
+              isAgent: false,
+              message: message,
+              messagedAt: new Date(Date.now()).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            });
+          else setInvalidMessage(true);
+
+          setMessage("");
+        }}
         className="pt-3 flex items-center justify-between pb-2"
       >
         <Input
-        {...register("message")}
-        onChange={(e) => {
-          if (e.target.value && e.target.value !== "") {
-            setTimeout(() => {
-              if (!dingloIO.socket) return;
-
-              dingloIO.socket.emit("typing", { isTyping: true });
-            }, 500);
-          } else {
-            setTimeout(() => {
-              if (!dingloIO.socket) return;
-
-              dingloIO.socket.emit("typing", { isTyping: false });
-            }, 500);
-          }
-
-        }}
-          
+          value={message}
           placeholder={
-            errors.message?.message
-              ? (errors.message.message as string)
-              : "Enter your message..."
+            "Enter your message..."
           }
+          onChange={(e)=>{
+            setMessage(e.target.value);
+          }}
           className="border-none"
         />
         <Button type="submit" variant={"outline"} className="group">

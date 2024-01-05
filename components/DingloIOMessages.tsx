@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef } from "react";
 import { DingloIOMessage } from "./DingloIOMessage";
 import { dingloMessage } from "@/types";
 
@@ -8,9 +9,17 @@ interface DingloIOMessagesProps{
 }
 
 export const DingloIOMessages = ({receivedMessages}: DingloIOMessagesProps) =>{
-  
+    const containerRef = useRef(null);
+    
+    useEffect(()=>{
+        if (containerRef.current) {
+            //@ts-ignore
+            containerRef.current.scrollTop = containerRef.current.scrollHeight;
+          }
+    },[receivedMessages]);
+
     return (
-        <div className="h-[500px] p-2 space-y-6 overflow-y-scroll overflowContainer">
+        <div ref={containerRef} className="h-[500px] p-2 space-y-6 overflow-y-scroll overflowContainer">
             {receivedMessages.map((msg, index)=>(
                 <DingloIOMessage key={index} msg={msg}/>
             ))}

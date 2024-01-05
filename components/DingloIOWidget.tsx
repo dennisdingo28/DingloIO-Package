@@ -112,7 +112,7 @@ export const DingloIOWidget = () => {
         }}
       >
         
-        <PopoverTrigger disabled={!isActive} asChild>
+        <PopoverTrigger asChild>
           <div
             className={`w-[60px] h-[60px] ${
               !newMessages ? "hover:h-[63px] hover:w-[63px]" : null
@@ -122,7 +122,7 @@ export const DingloIOWidget = () => {
                 : "duration-150"
             }`}
           >
-            {isActive===undefined ? <Loader2 className="w-5 h-5 text-white animate-spin"/>: null}
+            {isActive===undefined || isPending ? <Loader2 className="w-5 h-5 text-white animate-spin"/>: null}
             {isActive ? <Phone className="w-5 h-5 text-white" />: null}
 
           </div>
@@ -133,9 +133,7 @@ export const DingloIOWidget = () => {
             <DingloIOSettings />
           </div>
           
-          <div className="">
-            <DingloIOMessages receivedMessages={messages || []} />
-          </div>
+          <DingloIOMessages receivedMessages={messages || []} />
           <div className="px-2">
             <DingloIOSubmit/>
           </div>
