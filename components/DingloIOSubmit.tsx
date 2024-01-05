@@ -3,9 +3,6 @@
 import { Send } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { DingloIOMessageValidator } from "@/validators";
 import dingloIO from "@/dinglo-io";
 import { Separator } from "@radix-ui/react-separator";
 import { dingloMessage } from "@/types";
@@ -24,16 +21,12 @@ export const DingloIOSubmit = () => {
 
       return data;
     },
-    onSuccess: (data, variables) => {
-      if (!dingloIO || !dingloIO.socket) return;
-
+    onMutate: (variables) => {
       dingloIO.respond({
         message: variables.message,
         isAgent: variables.isAgent,
         messagedAt: variables.messagedAt,
       });
-    },
-    onMutate: (variables) => {
       queryClient.setQueryData(["getConversationMessages"], (old: dingloMessage[])=>[
         ...old,
         variables,
@@ -41,6 +34,7 @@ export const DingloIOSubmit = () => {
     },
     onSettled:()=>{
       queryClient.invalidateQueries({queryKey:["getConversationMessages"]});
+      dingloIO.socket?.emit("invalidate-query");
     }
   });
 

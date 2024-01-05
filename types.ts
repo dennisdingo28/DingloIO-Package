@@ -6,4 +6,11 @@ export interface dingloMessage {
     isNew: boolean
     agentName?: string;
     agentImage?: string;
+    automated?: boolean;
+}
+
+export interface Question {
+    id: string
+    question: string;
+    answer: string;
 }

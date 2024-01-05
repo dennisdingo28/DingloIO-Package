@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import dingloIO from "@/dinglo-io";
 import { dingloMessage } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { DingloIOQuestions } from "./DingloIOQuestions";
 
 export const DingloIOWidget = () => {
 
@@ -25,36 +26,25 @@ export const DingloIOWidget = () => {
     
     queryFn:async()=>{
       const data = await dingloIO.getConversation();
-      console.log("syncing", data);
       
       return data.messages as dingloMessage[];
     },
   });
 
-  useEffect(()=>{
-    console.log("data",messages);
-    
-  },[messages]);
 
   useEffect(() => {
 
     dingloIO.on("disable_project",(status)=>{
-        console.log("got here on errpor", status);
-        
-        setIsActive(status.isActive);
+      setIsActive(status.isActive);
     });
     dingloIO.on("invalidate_query",()=>{
-      console.log("invalidam");
-      
       queryClient.invalidateQueries({queryKey:["getConversationMessages"]});
   });
     dingloIO.on("message_client",(msg)=>{
         
       if(msg.isNew && !isOpen) setNewMessages(true);
       queryClient.setQueryData(["getConversationMessages"], (old: dingloMessage[])=>{
-        if(old && old.length>0)
         return [...old, msg];
-        return [msg];
       });
     });
     
@@ -132,7 +122,6 @@ export const DingloIOWidget = () => {
             <DingloIOProfile agent={agent} typing={isTyping}/>
             <DingloIOSettings />
           </div>
-          
           <DingloIOMessages receivedMessages={messages || []} />
           <div className="px-2">
             <DingloIOSubmit/>

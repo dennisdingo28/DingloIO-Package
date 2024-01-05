@@ -27,7 +27,6 @@ class DingloIO {
         this.socket?.off(event);
     }
     respond(msg: Omit<dingloMessage, "isNew" | "id">){
-        const messagedAt = new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         this.socket?.emit("message",{...msg});
     }
     async save(newMessage: Omit<dingloMessage, "isNew" | "id">){
@@ -37,6 +36,10 @@ class DingloIO {
     }
     async getConversation(){
         const res = await axios.get(`http://localhost:3000/api/client/${this.chatId}?apiKey=${this.apiKey}`);
+        return res.data;
+    }
+    async getQuestions(){
+        const res = await axios.get(`http://localhost:3000/api/client/${this.chatId}/questions?apiKey=${this.apiKey}`);
         return res.data;
     }
     disconnectSocket(){

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { DingloIOMessage } from "./DingloIOMessage";
 import { dingloMessage } from "@/types";
+import { DingloIOQuestions } from "./DingloIOQuestions";
 
 interface DingloIOMessagesProps{
     receivedMessages:Array<dingloMessage>;
@@ -20,6 +21,7 @@ export const DingloIOMessages = ({receivedMessages}: DingloIOMessagesProps) =>{
 
     return (
         <div ref={containerRef} className="h-[500px] p-2 space-y-6 overflow-y-scroll overflowContainer">
+            <DingloIOQuestions/>
             {receivedMessages.map((msg, index)=>(
                 <DingloIOMessage key={index} msg={msg}/>
             ))}
