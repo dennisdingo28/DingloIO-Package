@@ -14,20 +14,20 @@ export const DingloIOQuestion = ({question}:{question: Question})=>{
             {
               isAgent:false,
               message: question.answer,
-              messagedAt:new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+              messagedAt: newMessage.messagedAt,
               automated: true,
             }
           )
           return data;
         },
-        onMutate: (variables) => {
+        onMutate: (variable) => {
           queryClient.setQueryData(["getConversationMessages"], (old: dingloMessage[])=>[
             ...old,
-            variables,
+            variable,
             {
               isAgent:true,
               message: question.answer,
-              messagedAt:new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+              messagedAt:variable.messagedAt,
               automated:true,
               agentName:"Automat",
               agentImage:"https://res.cloudinary.com/dulb5sobi/image/upload/v1704311444/xjqlhfye2gn1f7urynwv.png",
@@ -35,16 +35,16 @@ export const DingloIOQuestion = ({question}:{question: Question})=>{
           ]);
           //default question
           dingloIO.respond({
-            message: variables.message,
-            isAgent: variables.isAgent,
-            messagedAt: variables.messagedAt,
+            message: variable.message,
+            isAgent: variable.isAgent,
+            messagedAt: variable.messagedAt,
           });
           //default answer
           dingloIO.respond({
             message: question.answer,
             automated:true,
             isAgent:false,
-            messagedAt: variables.messagedAt,
+            messagedAt: variable.messagedAt,
           });
         },
         onSettled:()=>{
@@ -53,6 +53,6 @@ export const DingloIOQuestion = ({question}:{question: Question})=>{
         }
       });
     return (
-        <p onClick={()=>createMessage({isAgent:false, message: question.question, messagedAt:new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })})} className="text-xs cursor-pointer hover:text-softBlue">{question.question}</p>
+        <p onClick={()=>createMessage({isAgent:false, message: question.question, messagedAt:new Date(Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })})} className="text-xs cursor-pointer text-softBlue hover:underline">{question.question}</p>
     )
 }
