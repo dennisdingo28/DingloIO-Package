@@ -49,7 +49,7 @@ export const DingloIOQuestion = ({question}:{question: Question})=>{
         },
         onSettled:()=>{
           queryClient.invalidateQueries({queryKey:["getConversationMessages"]});
-          dingloIO.socket?.emit("invalidate-query");
+          dingloIO.socket?.emit("invalidate_query");
         }
       });
     return (
